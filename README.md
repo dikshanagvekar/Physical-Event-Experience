@@ -8,9 +8,7 @@
 [![Cloud Run](https://img.shields.io/badge/Cloud%20Run-Deployed-4285F4?logo=googlecloud)](https://cloud.google.com/run)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8)](https://web.dev/progressive-web-apps)
 
-**Live Demo:** [Your Cloud Run URL]  
-**GitHub:** [Your GitHub URL]  
-**LinkedIn:** [Your LinkedIn Post URL]
+
 
 ---
 
