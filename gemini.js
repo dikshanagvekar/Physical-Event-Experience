@@ -18,7 +18,7 @@
 // Production: replace with your deployed Cloud Run backend URL
 const BACKEND_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'
-  : 'https://YOUR_CLOUD_RUN_API_URL'; // ← replace after deploying backend
+  : 'https://venue-ai-api-574902735417.asia-south1.run.app';
 
 // ── BackendClient ─────────────────────────────────────────────────────────────
 /**
