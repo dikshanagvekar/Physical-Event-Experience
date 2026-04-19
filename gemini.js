@@ -18,7 +18,7 @@
 // e.g. 'https://venue-ai-api-xyz-as.a.run.app'
 const BACKEND_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'           // local dev
-  : 'https://YOUR_CLOUD_RUN_API_URL'; // production ← replace after deploy
+  : 'https://venue-ai-api-574902735417.asia-south1.run.app'; // production ← replace after deploy
 
 /* =====================================================
    FUNCTION DECLARATIONS — Gemini tool schema
@@ -317,10 +317,10 @@ class GeminiClient {
       setTimeout(() => {
         if (!d) { resolve('Loading venue data — please try again in a moment! 🔄'); return; }
 
-        const bestGate     = crowdEngine.getBestGate();
-        const bestFood     = crowdEngine.getFastestFood();
+        const bestGate = crowdEngine.getBestGate();
+        const bestFood = crowdEngine.getFastestFood();
         const bestRestroom = crowdEngine.getNearestRestroom();
-        const avail        = crowdEngine.getAvailableParking();
+        const avail = crowdEngine.getAvailableParking();
 
         let response = '';
         if (/restroom|toilet|bathroom|washroom/.test(msg))

@@ -1,0 +1,29 @@
+# .gcloudignore — files excluded from Cloud Build upload
+# (mirrors .gitignore but for gcloud builds submit)
+
+# Secrets — never upload
+.env
+.env.*
+!.env.example
+serviceAccountKey.json
+*serviceAccount*.json
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Backend (deploy separately)
+backend/
+
+# Node
+node_modules/
+
+# Git
+.git/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
