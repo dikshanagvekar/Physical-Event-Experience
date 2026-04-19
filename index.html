@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="description" content="Smart Venue Assistant — Your AI-powered companion for the ultimate sporting event experience. Real-time crowd intelligence, navigation, queue tracking and more." />
+  <title>VenueAI — Smart Sporting Event Assistant</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Maps API: replace YOUR_MAPS_KEY -->
+  <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_MAPS_KEY&callback=initGoogleMap"></script> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- Background mesh gradient -->
+<div class="bg-mesh" aria-hidden="true"></div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+<!-- Zone tooltip -->
+<div class="zone-tooltip" id="zoneTooltip" aria-hidden="true"></div>
+
+<!-- App wrapper -->
+<div class="app-wrapper">
+
+  <!-- ── Top Navigation Bar ── -->
+  <nav class="navbar" role="banner">
+    <div class="navbar-brand">
+      <div class="brand-icon" aria-hidden="true">🏟️</div>
+      <div>
+        <div class="brand-name">VenueAI</div>
+        <div class="brand-sub">Smart Event Assistant</div>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <div class="nav-pill" id="liveStatus" aria-label="Live event status">
+        <span class="status-dot"></span>
+        <span>LIVE</span>
+      </div>
+      <div class="nav-pill" id="dataSourceBadge" aria-label="Data source" title="Data source">
+        🔵 Simulated
+      </div>
+      <button class="nav-pill" id="weatherWidget" aria-label="Weather conditions">
+        ☀️ 26°C
+      </button>
+      <button class="nav-pill" id="userAuthBtn" onclick="handleAuthClick()" aria-label="Sign in with Google" style="gap:6px;">
+        👤 Sign In
+      </button>
+      <button class="alert-badge" id="alertToggleBtn" aria-label="3 active alerts">
+        🔔
+        <span class="badge-count">3</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Event Hero Banner ── -->
+  <section class="event-banner" aria-label="Current event information">
+    <div class="event-info">
+      <div class="event-label">🏏 IPL 2026 — Grand Final</div>
+      <h1 class="event-title">Mumbai Indians vs Chennai Super Kings</h1>
+      <div class="event-meta">
+        <span class="event-meta-item">📍 ArenaMax Stadium, Mumbai</span>
+        <span class="event-meta-item">🕐 19:30 IST</span>
+        <span class="event-meta-item">👥 68,420 / 75,000</span>
+      </div>
+    </div>
+    <div class="event-score-card" aria-label="Live score">
+      <div class="team-display">
+        <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+        <div class="team-name">MI</div>
+        <div class="team-score" id="scoreMI">186</div>
+      </div>
+      <div class="score-divider">/<small style="font-size:0.65rem;display:block;color:var(--text-muted)">7</small></div>
+      <div class="team-display">
+        <div style="height:22px"></div>
+        <div class="team-name">CSK</div>
+        <div class="team-score" id="scoreCSK">142</div>
+        <div style="font-size:0.65rem;color:var(--text-muted)">Ov: 16.3</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tab Navigation ── -->
+  <nav class="tab-nav" role="tablist" aria-label="App sections" id="tabNav">
+    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="dashboard" id="tab-dashboard">
+      <span class="tab-icon">📊</span> Dashboard
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="heatmap" id="tab-heatmap">
+      <span class="tab-icon">🌡️</span> Crowd Map
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="ai" id="tab-ai">
+      <span class="tab-icon">🤖</span> AI Concierge
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="navigate" id="tab-navigate">
+      <span class="tab-icon">🗺️</span> Navigate
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="food" id="tab-food">
+      <span class="tab-icon">🍔</span> Food
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="seat" id="tab-seat">
+      <span class="tab-icon">💺</span> My Seat
+    </button>
+  </nav>
+
+  <!-- ── Main Content ── -->
+  <main class="main-content" role="main">
+
+    <!-- ════════════ DASHBOARD PANEL ════════════ -->
+    <section class="section-panel active" id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+
+      <!-- Stat Cards -->
+      <div class="stats-grid" aria-label="Venue statistics">
+        <div class="stat-card emerald" role="article">
+          <div class="stat-icon">🚪</div>
+          <div class="stat-value" id="statOpenGates">2</div>
+          <div class="stat-label">Gates Open</div>
+          <span class="stat-change up">↑ Fast Entry</span>
+        </div>
+        <div class="stat-card amber" role="article">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-value" id="statAvgWait">12</div>
+          <div class="stat-label">Avg Wait (min)</div>
+          <span class="stat-change down">↓ Improving</span>
+        </div>
+        <div class="stat-card rose" role="article">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="statCrowd">91%</div>
+          <div class="stat-label">Crowd Density</div>
+          <span class="stat-change down">↑ High</span>
+        </div>
+        <div class="stat-card sky" role="article">
+          <div class="stat-icon">🅿️</div>
+          <div class="stat-value" id="statParking">342</div>
+          <div class="stat-label">Spots Free</div>
+          <span class="stat-change up">↑ Lot A</span>
+        </div>
+      </div>
+
+      <!-- Active Alerts -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🔔</span> Active Alerts</h2>
+        <button class="see-all-btn" onclick="switchTab('heatmap')">View Map →</button>
+      </div>
+      <div class="alerts-stack" id="alertsStack" aria-label="Active venue alerts"></div>
+
+      <!-- Gates Status -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🚪</span> Gate Status</h2>
+        <button class="see-all-btn" onclick="switchTab('navigate')">Navigate →</button>
+      </div>
+      <div class="list-grid" id="gatesGrid" aria-label="Gate status list"></div>
+
+      <!-- Restrooms Quick View -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🚻</span> Nearest Restrooms</h2>
+      </div>
+      <div class="list-grid" id="restroomsGrid" aria-label="Restroom availability"></div>
+
+    </section>
+
+    <!-- ════════════ HEAT MAP PANEL ════════════ -->
+    <section class="section-panel" id="panel-heatmap" role="tabpanel" aria-labelledby="tab-heatmap">
+      <div class="heatmap-container" aria-label="Venue crowd density map">
+        <div class="heatmap-header">
+          <span class="heatmap-title">🌡️ Live Crowd Density Map</span>
+          <div class="heatmap-legend" role="list" aria-label="Density legend">
+            <div class="legend-item" role="listitem">
+              <div class="legend-dot" style="background:#22c55e"></div> Low
+            </div>
+            <div class="legend-item" role="listitem">
+              <div class="legend-dot" style="background:#f59e0b"></div> Medium
+            </div>
+            <div class="legend-item" role="listitem">
+              <div class="legend-dot" style="background:#ef4444"></div> High
+            </div>
+          </div>
+        </div>
+        <div class="heatmap-svg-wrap" id="heatmapSvgWrap">
+          <!-- SVG rendered by JS -->
+        </div>
+        <div style="padding:0 20px 14px; font-size:0.72rem; color:var(--text-muted);">
+          🔄 Auto-updates every 30 seconds · Click a zone for details
+        </div>
+      </div>
+
+      <!-- Zone List -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">📍</span> All Zones</h2>
+      </div>
+      <div class="list-grid" id="zonesGrid" aria-label="Zone density list"></div>
+
+    </section>
+
+    <!-- ════════════ AI CONCIERGE PANEL ════════════ -->
+    <section class="section-panel" id="panel-ai" role="tabpanel" aria-labelledby="tab-ai">
+      <div class="chat-container" aria-label="AI Concierge chat">
+        <div class="chat-header">
+          <div class="chat-avatar" aria-hidden="true">🤖</div>
+          <div class="chat-agent-info">
+            <div class="chat-agent-name">ARIA — AI Arena Intelligence</div>
+            <div class="chat-agent-status">
+              <span class="status-dot"></span> Powered by Gemini · Always available
+            </div>
+          </div>
+          <button onclick="clearChat()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;" aria-label="Clear chat">🗑️</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" role="log" aria-label="Chat messages" aria-live="polite">
+          <!-- Initial AI greeting rendered by JS -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="msg-row typing-indicator" id="typingIndicator" aria-hidden="true">
+          <div class="msg-avatar ai">🤖</div>
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+
+        <!-- Quick Prompts -->
+        <div class="quick-prompts" id="quickPrompts" role="group" aria-label="Quick question shortcuts">
+          <button class="quick-btn" onclick="sendQuickPrompt('Where is the nearest restroom?')">🚻 Restroom</button>
+          <button class="quick-btn" onclick="sendQuickPrompt('Which gate has the shortest queue right now?')">🚪 Gate queue</button>
+          <button class="quick-btn" onclick="sendQuickPrompt('What food options are available with less than 5 min wait?')">🍔 Fast food</button>
+          <button class="quick-btn" onclick="sendQuickPrompt('Is there parking available near Gate A?')">🅿️ Parking</button>
+          <button class="quick-btn" onclick="sendQuickPrompt('Where is the nearest medical bay?')">🏥 Medical</button>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            id="chatInput"
+            placeholder="Ask ARIA anything about the venue..."
+            aria-label="Chat message input"
+            autocomplete="off"
+            maxlength="300"
+          />
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">
+            ➤
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ NAVIGATE PANEL ════════════ -->
+    <section class="section-panel" id="panel-navigate" role="tabpanel" aria-labelledby="tab-navigate">
+      <div class="map-wrapper">
+        <div class="map-controls" role="group" aria-label="Map filter controls">
+          <button class="map-ctrl-btn active" data-filter="all" onclick="setMapFilter('all', this)">📍 All</button>
+          <button class="map-ctrl-btn" data-filter="gates" onclick="setMapFilter('gates', this)">🚪 Gates</button>
+          <button class="map-ctrl-btn" data-filter="food" onclick="setMapFilter('food', this)">🍔 Food</button>
+          <button class="map-ctrl-btn" data-filter="restroom" onclick="setMapFilter('restroom', this)">🚻 Restrooms</button>
+          <button class="map-ctrl-btn" data-filter="medical" onclick="setMapFilter('medical', this)">🏥 Medical</button>
+          <button class="map-ctrl-btn" data-filter="parking" onclick="setMapFilter('parking', this)">🅿️ Parking</button>
+        </div>
+        <!-- Google Maps renders here when API key is provided -->
+      <div id="googleMap">
+        <div class="map-placeholder" aria-label="Interactive venue map">
+          <div class="map-placeholder-icon">🗺️</div>
+          <div class="map-placeholder-text" id="mapPlaceholderText">
+            ArenaMax Stadium — Facility Map<br/>
+            <small style="font-size:0.72rem;opacity:0.6">Uncomment the Maps script in &lt;head&gt; with your API key for live Google Maps navigation</small>
+          </div>
+          <!-- Fallback venue diagram -->
+          <div id="venueDiagram" style="width:100%;padding:0 20px 20px;"></div>
+        </div>
+      </div>
+      </div>
+
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">🧭</span> Navigation Tips</h2>
+      </div>
+      <div class="list-grid" id="navTipsGrid"></div>
+
+    </section>
+
+    <!-- ════════════ FOOD PANEL ════════════ -->
+    <section class="section-panel" id="panel-food" role="tabpanel" aria-labelledby="tab-food">
+      <div class="section-header" style="margin-bottom:14px;">
+        <h2 class="section-title"><span class="icon">🍔</span> Food & Beverages</h2>
+        <div style="display:flex;gap:8px;">
+          <select id="foodFilter" onchange="filterConcessions()" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-full);padding:6px 12px;color:var(--text-secondary);font-size:0.78rem;" aria-label="Filter by category">
+            <option value="all">All</option>
+            <option value="food">Food</option>
+            <option value="beverages">Beverages</option>
+            <option value="merchandise">Merch</option>
+          </select>
+        </div>
+      </div>
+      <div class="concession-grid" id="concessionGrid" aria-label="Food and concession stalls"></div>
+    </section>
+
+    <!-- ════════════ MY SEAT PANEL ════════════ -->
+    <section class="section-panel" id="panel-seat" role="tabpanel" aria-labelledby="tab-seat">
+
+      <div class="seat-card" aria-label="Your seat information">
+        <div class="seat-qr" aria-label="QR code for entry">
+          <svg width="70" height="70" viewBox="0 0 70 70" fill="none" aria-hidden="true">
+            <!-- Simple QR pattern -->
+            <rect x="5" y="5" width="20" height="20" rx="2" fill="#000"/>
+            <rect x="8" y="8" width="14" height="14" rx="1" fill="#fff"/>
+            <rect x="10" y="10" width="10" height="10" rx="0.5" fill="#000"/>
+            <rect x="45" y="5" width="20" height="20" rx="2" fill="#000"/>
+            <rect x="48" y="8" width="14" height="14" rx="1" fill="#fff"/>
+            <rect x="50" y="10" width="10" height="10" rx="0.5" fill="#000"/>
+            <rect x="5" y="45" width="20" height="20" rx="2" fill="#000"/>
+            <rect x="8" y="48" width="14" height="14" rx="1" fill="#fff"/>
+            <rect x="10" y="50" width="10" height="10" rx="0.5" fill="#000"/>
+            <rect x="30" y="5" width="5" height="5" fill="#000"/><rect x="38" y="5" width="5" height="5" fill="#000"/>
+            <rect x="5" y="30" width="5" height="5" fill="#000"/><rect x="5" y="38" width="5" height="5" fill="#000"/>
+            <rect x="30" y="30" width="5" height="5" fill="#000"/><rect x="38" y="32" width="5" height="5" fill="#000"/>
+            <rect x="30" y="40" width="5" height="5" fill="#000"/><rect x="38" y="45" width="5" height="5" fill="#000"/>
+            <rect x="45" y="30" width="5" height="5" fill="#000"/><rect x="55" y="30" width="10" height="5" fill="#000"/>
+            <rect x="45" y="40" width="10" height="5" fill="#000"/><rect x="58" y="40" width="7" height="5" fill="#000"/>
+          </svg>
+        </div>
+        <div class="seat-info">
+          <div class="seat-label">Your Seat</div>
+          <div class="seat-value" id="seatDisplay">E · 14 · 22</div>
+          <div class="seat-sub" id="seatSubDisplay">East Stand · Row 14 · Seat 22 · Upper Tier</div>
+          <div class="seat-actions">
+            <button class="seat-action-btn sab-primary" onclick="navigateToSeat()" id="navigateSeatBtn">📍 Navigate to Seat</button>
+            <button class="seat-action-btn sab-secondary" onclick="switchTab('ai')">🤖 Ask ARIA</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seat Preferences -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">⚙️</span> Your Preferences</h2>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="flex-between">
+            <div style="font-size:0.85rem;font-weight:500;">♿ Accessibility Mode</div>
+            <label class="toggle-switch" aria-label="Toggle accessibility mode">
+              <input type="checkbox" id="accessibilityToggle" onchange="toggleAccessibility(this)" />
+              <span class="toggle-knob"></span>
+            </label>
+          </div>
+          <div class="flex-between">
+            <div style="font-size:0.85rem;font-weight:500;">🔔 Crowd Alerts</div>
+            <label class="toggle-switch" aria-label="Toggle crowd alerts">
+              <input type="checkbox" id="crowdAlertsToggle" checked onchange="toggleCrowdAlerts(this)" />
+              <span class="toggle-knob"></span>
+            </label>
+          </div>
+          <div class="flex-between">
+            <div style="font-size:0.85rem;font-weight:500;">🍔 Food Recommendations</div>
+            <label class="toggle-switch" aria-label="Toggle food recommendations">
+              <input type="checkbox" id="foodRecoToggle" checked />
+              <span class="toggle-knob"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nearest Facilities from Seat -->
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">📍</span> Nearest to Your Seat</h2>
+      </div>
+      <div class="list-grid" id="nearestGrid" aria-label="Nearest facilities to your seat"></div>
+
+    </section>
+
+  </main><!-- /.main-content -->
+
+  <!-- ── Bottom Nav (Mobile) ── -->
+  <nav class="bottom-nav" role="navigation" aria-label="Mobile navigation">
+    <div class="bnav-items">
+      <button class="bnav-item active" data-tab="dashboard" onclick="switchTab('dashboard')" aria-label="Dashboard">
+        <span class="bnav-icon">📊</span>
+        <span>Home</span>
+      </button>
+      <button class="bnav-item" data-tab="heatmap" onclick="switchTab('heatmap')" aria-label="Crowd Map">
+        <span class="bnav-icon">🌡️</span>
+        <span>Map</span>
+      </button>
+      <button class="bnav-item" data-tab="ai" onclick="switchTab('ai')" aria-label="AI Concierge">
+        <span class="bnav-icon">🤖</span>
+        <span>ARIA</span>
+      </button>
+      <button class="bnav-item" data-tab="food" onclick="switchTab('food')" aria-label="Food">
+        <span class="bnav-icon">🍔</span>
+        <span>Food</span>
+      </button>
+      <button class="bnav-item" data-tab="seat" onclick="switchTab('seat')" aria-label="My Seat">
+        <span class="bnav-icon">💺</span>
+        <span>Seat</span>
+      </button>
+    </div>
+  </nav>
+
+</div><!-- /.app-wrapper -->
+
+<!-- Toggle switch CSS (inline for simplicity) -->
+<style>
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-knob {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 99px; transition: 0.25s;
+}
+.toggle-knob::before {
+  content: '';
+  position: absolute; left: 3px; top: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--text-muted); transition: 0.25s;
+}
+.toggle-switch input:checked + .toggle-knob { background: rgba(99,102,241,0.3); border-color: var(--accent); }
+.toggle-switch input:checked + .toggle-knob::before { transform: translateX(20px); background: var(--accent); }
+</style>
+
+<!-- Scripts -->
+<script src="crowd.js"></script>
+<script src="gemini.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

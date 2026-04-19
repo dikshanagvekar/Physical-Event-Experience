@@ -1,0 +1,47 @@
+# .gitignore for VenueAI
+# ⚠️  NEVER commit API keys or credentials to GitHub
+
+# ── Credentials & Secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+serviceAccountKey.json
+*serviceAccount*.json
+*credentials*.json
+config.local.js
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+
+# ── Node ──────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# ── Build artifacts ───────────────────────────────────────────────────────────
+dist/
+build/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/

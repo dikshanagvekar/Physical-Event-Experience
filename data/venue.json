@@ -1,0 +1,51 @@
+{
+  "venue": {
+    "name": "ArenaMax Stadium",
+    "capacity": 75000,
+    "event": "IPL 2026 — Finals",
+    "teams": ["Mumbai Indians", "Chennai Super Kings"],
+    "matchTime": "19:30",
+    "location": { "lat": 19.0760, "lng": 72.8777 }
+  },
+  "gates": [
+    { "id": "A", "name": "Gate A — North", "density": 0.3, "status": "open", "queue": 4 },
+    { "id": "B", "name": "Gate B — East", "density": 0.75, "status": "busy", "queue": 18 },
+    { "id": "C", "name": "Gate C — South", "density": 0.9, "status": "crowded", "queue": 32 },
+    { "id": "D", "name": "Gate D — West", "density": 0.4, "status": "open", "queue": 6 }
+  ],
+  "zones": [
+    { "id": "Z1", "name": "North Stand", "section": "Lower Tier", "density": 0.4, "color": "#22c55e" },
+    { "id": "Z2", "name": "East Stand", "section": "Upper Tier", "density": 0.78, "color": "#f59e0b" },
+    { "id": "Z3", "name": "South Stand", "section": "VIP Box", "density": 0.92, "color": "#ef4444" },
+    { "id": "Z4", "name": "West Stand", "section": "General", "density": 0.55, "color": "#f59e0b" },
+    { "id": "Z5", "name": "Center Field", "section": "Premium", "density": 0.3, "color": "#22c55e" }
+  ],
+  "concessions": [
+    { "id": "C1", "name": "Burger Hub", "zone": "North", "waitMin": 5, "category": "food", "items": ["Classic Burger", "Cheese Fries", "Cola"] },
+    { "id": "C2", "name": "Spice Lane", "zone": "East", "waitMin": 14, "category": "food", "items": ["Pav Bhaji", "Samosa", "Lassi"] },
+    { "id": "C3", "name": "Pizza Express", "zone": "South", "waitMin": 22, "category": "food", "items": ["Margherita", "Pepperoni", "Garlic Bread"] },
+    { "id": "C4", "name": "Refresh Bar", "zone": "West", "waitMin": 3, "category": "beverages", "items": ["Water", "Energy Drink", "Fresh Juice"] },
+    { "id": "C5", "name": "Fan Merch", "zone": "North", "waitMin": 8, "category": "merchandise", "items": ["Team Jersey", "Cap", "Keychain"] }
+  ],
+  "restrooms": [
+    { "id": "R1", "name": "Restroom North A", "zone": "North", "waitMin": 2, "capacity": "available" },
+    { "id": "R2", "name": "Restroom East B", "zone": "East", "waitMin": 8, "capacity": "busy" },
+    { "id": "R3", "name": "Restroom South C", "zone": "South", "waitMin": 15, "capacity": "crowded" },
+    { "id": "R4", "name": "Restroom West D", "zone": "West", "waitMin": 4, "capacity": "available" }
+  ],
+  "parking": [
+    { "id": "P1", "name": "Lot A — North", "available": 342, "total": 800, "distance": "5 min walk" },
+    { "id": "P2", "name": "Lot B — East", "available": 12, "total": 600, "distance": "8 min walk" },
+    { "id": "P3", "name": "Lot C — South", "available": 0, "total": 500, "distance": "3 min walk" },
+    { "id": "P4", "name": "Lot D — Metro", "available": 1200, "total": 1500, "distance": "12 min walk" }
+  ],
+  "alerts": [
+    { "id": "AL1", "type": "crowd", "severity": "warning", "message": "Gate C is at 90% capacity. Use Gate A or D for faster entry.", "time": "18:45" },
+    { "id": "AL2", "type": "info", "severity": "info", "message": "VIP Gate opens at 18:00. Please have your QR pass ready.", "time": "17:30" },
+    { "id": "AL3", "type": "weather", "severity": "info", "message": "Clear skies tonight. Temperature: 26°C. Perfect match weather!", "time": "18:00" }
+  ],
+  "medicalPosts": [
+    { "id": "M1", "zone": "North", "name": "Medical Bay North", "available": true },
+    { "id": "M2", "zone": "South", "name": "Medical Bay South", "available": true }
+  ]
+}
